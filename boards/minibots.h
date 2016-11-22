@@ -1,0 +1,66 @@
+#pragma once
+
+#include <drivers/mc33879.h>
+#include <drivers/lv165a.h>
+
+typedef PLL_T<HSI_RC, 48000000> PLL;
+typedef SYSCLK_T<PLL> SYSCLK;
+typedef SYSTICK_T<SYSCLK, 100000> SYSTICK;
+typedef TIMEOUT_T<SYSTICK> TIMEOUT;
+
+typedef GPIO_T<PA, 0, MODE_ANALOG> I1;
+typedef GPIO_T<PA, 1, MODE_ANALOG> I2;
+typedef GPIO_T<PA, 2, MODE_ANALOG> I3;
+typedef GPIO_T<PA, 4, MODE_ANALOG> POT;
+typedef GPIO_T<PA, 5, MODE_ALTFUNC, TYPE_PUSH_PULL, SPEED_HIGH, PULL_NONE, AF0> SCK;
+typedef GPIO_T<PA, 6, MODE_ALTFUNC, TYPE_PUSH_PULL, SPEED_HIGH, PULL_NONE, AF0> MISO;
+typedef GPIO_T<PA, 7, MODE_ALTFUNC, TYPE_PUSH_PULL, SPEED_HIGH, PULL_NONE, AF0> MOSI;
+typedef GPIO_T<PA, 9, MODE_OUTPUT> OUTPUTS_CSN;
+typedef GPIO_T<PA, 10, MODE_OUTPUT> OUTPUTS_EN;
+typedef GPIO_T<PA, 13, MODE_ALTFUNC, TYPE_PUSH_PULL, SPEED_HIGH, PULL_UP, AF0> SWDIO;
+typedef GPIO_T<PA, 14, MODE_ALTFUNC, TYPE_PUSH_PULL, SPEED_LOW, PULL_DOWN, AF0> SWCLK;
+typedef GPIO_PORT_T<PA, I1, I2, I3, POT, SWDIO, SWCLK, SCK, MISO, MOSI, OUTPUTS_EN, OUTPUTS_CSN> PORT_A;
+
+typedef GPIO_T<PB, 1, MODE_OUTPUT> LED;
+typedef GPIO_PORT_T<PB, LED> PORT_B;
+
+typedef GPIO_T<PF, 1, MODE_OUTPUT> DIP_CSN;
+typedef GPIO_PORT_T<PF, DIP_CSN> PORT_F;
+
+typedef SPI_T<SYSCLK, true, 1, 4000000, 16> OUTPUTS_SPI;
+typedef SPI_T<SYSCLK> DIP_SPI;
+
+typedef MC33879_T<OUTPUTS_SPI, OUTPUTS_CSN, OUTPUTS_EN> OUTPUTS;
+typedef LV165A<DIP_SPI, DIP_CSN> DIP;
+
+typedef GPIO_OUTPUT_T<PB, 8> LED1;
+typedef GPIO_OUTPUT_T<PB, 9> LED2;
+typedef GPIO_INPUT_T<PB, 7> BUTTON;
+
+namespace BOARD_T {
+
+enum {
+	LED1 = 1,
+	LED2 = 2,
+	BUTTON = 4,
+	CONSOLE = 8,
+	I2C = 16,
+	SPI = 32
+};
+
+template<const uint32_t FEATURES = LED1 | SPI>
+struct BOARD {
+	static void init(void) {
+		PLL::init();
+		SYSCLK::init();
+		SYSTICK::init();
+
+		PORT_B::init();
+		PORT_A::init();
+		PORT_F::init();
+
+	}
+};
+
+};
+
