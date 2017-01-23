@@ -34,7 +34,11 @@ typedef GPIO_OUTPUT_T<PA, 4> NRF24_CSN;
 #endif
 
 typedef EXTI_T<NRF24_IRQ, BUTTON> EXT_INTERRUPT;
+#ifdef STM32F0xx
+typedef SPI_T<SYSCLK, true, 0, 1000000> SPI;
+#else
 typedef SPI_T<SYSCLK, SPI_1, true, 0, 1000000> SPI;
+#endif
 #if (defined BOARD_ID_stm32_e407)
 typedef USART_T<SYSCLK, USART_1> CON;
 

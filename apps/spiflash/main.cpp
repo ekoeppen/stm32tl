@@ -10,8 +10,16 @@
 #include <usb/usb.h>
 #include <drivers/usb_cdc.h>
 #include <drivers/w25q.h>
+#include <drivers/cy15b.h>
+#include <drivers/fm25.h>
+#include <drivers/m25aa.h>
 
 #include <board.h>
+
+#define FLASH_TYPE_CY15
+// #define FLASH_TYPE_FM25
+// #define FLASH_TYPE_W25
+// #define FLASH_TYPE_M25AA
 
 #ifdef STM32F0xx
 typedef SYSCLK_T<HSI48_RC> SYSCLK;
@@ -30,7 +38,16 @@ typedef SPI_T<SYSCLK, true, 0, 8000000> SPI;
 typedef SPI_T<SYSCLK, SPI_1, true, 0, 8000000> SPI;
 #endif
 typedef BOARD_T::BOARD<BOARD_T::LED1 | BOARD_T::LED2 | BOARD_T::BUTTON | BOARD_T::CONSOLE | BOARD_T::SPI> BOARD;
+
+#ifdef FLASH_TYPE_FM25
+typedef FM25_T<SPI, CSN> SPI_FLASH;
+#elif defined FLASH_TYPE_W25
 typedef W25Q_T<SPI, CSN> SPI_FLASH;
+#elif defined FLASH_TYPE_CY15
+typedef CY15B_T<SPI, CSN> SPI_FLASH;
+#elif defined FLASH_TYPE_M25AA
+typedef M25AA_T<SPI, CSN> SPI_FLASH;
+#endif
 
 extern "C" {
 
@@ -70,17 +87,31 @@ int main(void)
 			SPI_FLASH::erase();
 			break;
 		case 'r':
-			for (uint32_t addr = 0; addr < 4 * 1024; addr += 256) {
+			for (uint32_t addr = 0; addr < 2 * 1024; addr += 256) {
 				SPI_FLASH::read(addr, buffer, sizeof(buffer));
 				printf<CON>("%04x\n", addr);
 				hex_dump<CON>(buffer, sizeof(buffer), 0, true);
 			}
 			break;
+		case 'd':
+			for (uint32_t addr = 0; addr < 2 * 1024; addr += 256) {
+				SPI_FLASH::read(addr, buffer, sizeof(buffer));
+				CON::write(buffer, sizeof(buffer));
+			}
+			break;
+		case 'D':
+			for (uint32_t addr = 0; addr < 64 * 1024; addr += 256) {
+				SPI_FLASH::read(addr, buffer, sizeof(buffer));
+				CON::write(buffer, sizeof(buffer));
+			}
+			break;
 		case 't':
 			CON::puts("Writing test data...\n");
-			for (size_t i = 0; i < 256; i++) buffer[i] = i;
-			for (uint32_t addr = 0; addr < 4 * 1024; addr += 256) {
-				buffer[0] = addr >> 8;
+			for (size_t i = 0; i < 256; i++) buffer[i] = (i % 64) + 32;
+			buffer[1] = ' ';
+			for (uint32_t addr = 0; addr < 2 * 1024; addr += 32) {
+				printf<CON>("Addr: %08x...\n", addr);
+				buffer[0] = (addr >> 8) + '0';
 				SPI_FLASH::write(addr, buffer, sizeof(buffer));
 			}
 			break;

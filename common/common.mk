@@ -44,6 +44,12 @@ STM32F407ZG_CMSIS_DEVICE := STM32F4xx
 STM32F407ZG_H := stm32f4xx.h
 STM32F407ZG_CPU_FLAGS := -mcpu=cortex-m4 -mthumb -march=armv7e-m -mfpu=fpv4-sp-d16 -DSTM32F40_41xxx
 
+STM32F446ZE_FAMILY := f4
+STM32F446ZE_LD := stm32f446zetx$(BL).ld
+STM32F446ZE_CMSIS_DEVICE := STM32F4xx
+STM32F446ZE_H := stm32f4xx.h
+STM32F446ZE_CPU_FLAGS := -mcpu=cortex-m4 -mthumb -march=armv7e-m -mfpu=fpv4-sp-d16 -DSTM32F446xx
+
 FAMILY := $($(CPU)_FAMILY)
 LINKER_SCRIPT := $($(CPU)_LD)
 CMSIS_DEVICE := $($(CPU)_CMSIS_DEVICE)

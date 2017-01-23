@@ -99,6 +99,10 @@ struct TIMEOUT_T {
 		}
 		disable();
 	}
+
+	static void set_and_wait_us(const uint32_t microseconds) {
+		CLOCK::set_and_wait_us(microseconds);
+	}
 };
 
 template<typename CLOCK>
