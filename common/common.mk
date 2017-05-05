@@ -97,7 +97,7 @@ CXX_SRCS += $(STM32TL)/common/utils.cpp
 # Generic targets
 .PHONY: clean all
 
-all: $(BUILD)/main.elf $(BUILD)/main.bin $(BUILD)/main.map $(BUILD)/main.lst
+all: $(BUILD)/$(PRG).elf $(BUILD)/$(PRG).bin $(BUILD)/$(PRG).map $(BUILD)/$(PRG).lst
 
 clean:
 	rm -rf $(BUILD)
@@ -135,6 +135,6 @@ $(BUILD)/%.o: %.S
 
 $(OBJS): | $(BUILD)
 
-$(BUILD)/main.elf: $(OBJS)
+$(BUILD)/$(PRG).elf: $(OBJS)
 	$(LD) -o $@ $(LDFLAGS) $(OBJS)
 
