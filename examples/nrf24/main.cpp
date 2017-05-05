@@ -31,6 +31,10 @@ typedef GPIO_OUTPUT_T<PA, 4> NRF24_CSN;
 typedef GPIO_T<PE, 6, MODE_INPUT, TYPE_PUSH_PULL, SPEED_LOW, PULL_NONE, AF0, EDGE_FALLING> NRF24_IRQ;
 typedef GPIO_OUTPUT_T<PG, 7> NRF24_CE;
 typedef GPIO_OUTPUT_T<PA, 4> NRF24_CSN;
+#elif (defined BOARD_ID_tssop20_nrf24)
+typedef GPIO_T<PA, 3, MODE_INPUT, TYPE_PUSH_PULL, SPEED_LOW, PULL_NONE, AF0, EDGE_FALLING> NRF24_IRQ;
+typedef GPIO_OUTPUT_T<PB, 1> NRF24_CE;
+typedef CSN NRF24_CSN;
 #endif
 
 typedef EXTI_T<NRF24_IRQ, BUTTON> EXT_INTERRUPT;
@@ -39,8 +43,8 @@ typedef SPI_T<SYSCLK, true, 0, 1000000> SPI;
 #else
 typedef SPI_T<SYSCLK, SPI_1, true, 0, 1000000> SPI;
 #endif
-#if (defined BOARD_ID_stm32_e407)
-typedef USART_T<SYSCLK, USART_1> CON;
+#if (defined BOARD_ID_stm32_e407 || defined BOARD_ID_tssop20_nrf24)
+typedef USART_T<SYSCLK, USART_1, 115200> CON;
 
 extern "C" {
 
@@ -55,7 +59,8 @@ void USART1_IRQHandler(void)
 
 volatile bool nrf24_irq;
 
-typedef NRF24_T<SPI, NRF24_CSN, NRF24_CE, NRF24_IRQ, TIMEOUT> NRF24;
+//typedef NRF24_T<SPI, NRF24_CSN, NRF24_CE, NRF24_IRQ, TIMEOUT> NRF24;
+typedef NRF24_T<SPI, NRF24_CSN, NRF24_CE, PIN_UNUSED, TIMEOUT> NRF24;
 typedef BOARD_T::BOARD<BOARD_T::BUTTON | BOARD_T::LED1 | BOARD_T::LED2 | BOARD_T::SPI | BOARD_T::CONSOLE> BOARD;
 
 extern "C" {
@@ -151,7 +156,9 @@ void handle_radio_traffic(void)
 }
 
 uint8_t regs[64] __attribute__((aligned(4)));
-uint8_t packet[64] __attribute__((aligned(4)));
+static const uint8_t test_data[9] = {
+	0x00, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0xff, 0x55
+};
 
 int main(void)
 {
@@ -165,6 +172,9 @@ int main(void)
 	typedef GPIO_PORT_T<PG> PORT_G;
 	PORT_E::init();
 	PORT_G::init();
+	CON::init();
+#elif (defined BOARD_ID_tssop20_nrf24)
+	PORT_B::init();
 	CON::init();
 #endif
 	LED1::set_high();
@@ -186,7 +196,9 @@ int main(void)
 		handle_radio_traffic();
 		if (BUTTON::irq_raised()) {
 			LED1::toggle();
-			NRF24::read_regs(regs); hex_dump<CON>(regs, sizeof(regs));
+			NRF24::start_tx();
+			NRF24::tx_buffer(test_data, sizeof(test_data));
+			NRF24::start_rx();
 			BUTTON::clear_irq();
 		}
 	}

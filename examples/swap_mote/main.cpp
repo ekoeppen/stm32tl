@@ -32,6 +32,10 @@ typedef GPIO_OUTPUT_T<PA, 4> NRF24_CSN;
 typedef GPIO_T<PE, 6, MODE_INPUT, TYPE_PUSH_PULL, SPEED_LOW, PULL_NONE, AF0, EDGE_FALLING> NRF24_IRQ;
 typedef GPIO_OUTPUT_T<PG, 7> NRF24_CE;
 typedef GPIO_OUTPUT_T<PA, 4> NRF24_CSN;
+#elif (defined BOARD_ID_tssop20_nrf24)
+typedef GPIO_T<PA, 3, MODE_INPUT, TYPE_PUSH_PULL, SPEED_LOW, PULL_NONE, AF0, EDGE_FALLING> NRF24_IRQ;
+typedef GPIO_OUTPUT_T<PB, 1> NRF24_CE;
+typedef CSN NRF24_CSN;
 #endif
 
 typedef EXTI_T<NRF24_IRQ, BUTTON> EXT_INTERRUPT;
@@ -40,7 +44,7 @@ typedef SPI_T<SYSCLK, true, 0, 1000000> SPI;
 #else
 typedef SPI_T<SYSCLK, SPI_1, true, 0, 1000000> SPI;
 #endif
-#if (defined BOARD_ID_stm32_e407)
+#if (defined BOARD_ID_stm32_e407 || defined BOARD_ID_tssop20_nrf24)
 typedef USART_T<SYSCLK, USART_1> CON;
 
 extern "C" {
@@ -195,6 +199,9 @@ int main(void)
 	typedef GPIO_PORT_T<PG> PORT_G;
 	PORT_E::init();
 	PORT_G::init();
+	CON::init();
+#elif (defined BOARD_tssop20_nrf24)
+	PORTB::init();
 	CON::init();
 #endif
 	LED1::set_high();
