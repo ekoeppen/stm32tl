@@ -12,15 +12,22 @@ enum {
 
 template<typename CLOCK,
 	const int INSTANCE,
-	const int BAUD,
+	const int BAUD = 115200,
 	const int WORD_LEN = 8,
 	const int PARITY = 0,
 	const int STOP_BITS = 1>
 struct USART_T {
+#ifdef USART2
 	static constexpr USART_TypeDef *uart = INSTANCE == USART_1 ? USART1 : USART2;
+#else
+	static constexpr USART_TypeDef *uart = USART1;
+#endif
 
 	volatile static bool irq_triggered;
 	volatile static uint8_t last_rx_data;
+	static constexpr bool enabled(void) {
+		return true;
+	}
 
 	static void init(void) {
 		RCC->APB2ENR |= RCC_APB2ENR_USART1EN;
@@ -52,11 +59,13 @@ struct USART_T {
 		uart->TDR = data;
 	}
 
+	template<typename TIMEOUT = TIMEOUT_NEVER>
 	static void putc(char data) {
 		uart->TDR = data;
 		while (!tx_complete());
 	}
 
+	template<typename TIMEOUT = TIMEOUT_NEVER>
 	static void puts(const char *data) {
 		while (*data) {
 			putc(*data++);
