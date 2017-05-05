@@ -13,7 +13,13 @@
 
 #include <board.h>
 
-#include "radio_config_Si4455_cc1101_compat.h"
+// #include "radio_config_Si4455.h"
+
+#if (MODE == TX)
+#include "radio_config_si4455_std_pkt_tx.h"
+#else
+#include "radio_config_si4355_std_pkt_rx.h"
+#endif
 
 #ifdef STM32F0xx
 typedef SYSCLK_T<HSI48_RC> SYSCLK;
@@ -51,7 +57,7 @@ typedef SPI_T<SYSCLK, SPI_1, true, 0, 4000000> SPI;
 
 typedef EXTI_T<IRQ> EXT_INTERRUPT;
 
-typedef BOARD_T::BOARD<BOARD_T::LED1 | BOARD_T::LED2 | BOARD_T::BUTTON | BOARD_T::CONSOLE | BOARD_T::SPI> BOARD;
+typedef BOARD_T::BOARD<BOARD_T::LED1 | BOARD_T::LED2 | BOARD_T::BUTTON /*| BOARD_T::CONSOLE */ | BOARD_T::SPI> BOARD;
 
 static uint8_t const radio_config[] = RADIO_CONFIGURATION_DATA_ARRAY;
 static uint8_t response_buffer[64];
@@ -140,7 +146,7 @@ void write_tx_fifo(uint8_t *packet, uint8_t packet_length)
 
 void read_rx_fifo(uint8_t length)
 {
-	read_rx_fifo(response_buffer, length); hex_dump<CON>(response_buffer, length, "RX FIFO");
+	read_rx_fifo(response_buffer, length); // hex_dump<CON>(response_buffer, length, "RX FIFO");
 }
 
 void start_rx(void)
@@ -161,22 +167,27 @@ void start_tx(uint8_t len)
 
 void rx_fifo_info(void)
 {
-	radio_command((uint8_t *) "\x15\x00", 2, response_buffer, 1); hex_dump<CON>(response_buffer, 16, "FIFO Status");
+	radio_command((uint8_t *) "\x15\x00", 2, response_buffer, 1); // hex_dump<CON>(response_buffer, 16, "FIFO Status");
 }
 
 void reset_rx_fifo(void)
 {
-	radio_command((uint8_t *) "\x15\x02", 2, response_buffer, 1); hex_dump<CON>(response_buffer, 16, "FIFO Status (reset)");
+	radio_command((uint8_t *) "\x15\x02", 2, response_buffer, 1); // hex_dump<CON>(response_buffer, 16, "FIFO Status (reset)");
+}
+
+void part_info(void)
+{
+	radio_command(0x01, response_buffer, 8); // hex_dump<CON>(response_buffer, 16, "Device status");
 }
 
 void device_status(void)
 {
-	radio_command(0x33, response_buffer, 2); hex_dump<CON>(response_buffer, 16, "Device status");
+	radio_command(0x33, response_buffer, 2); // hex_dump<CON>(response_buffer, 16, "Device status");
 }
 
 void clear_irq(void)
 {
-	radio_command((uint8_t *) "\x20\x00\x00\x00", 4, response_buffer, 8); hex_dump<CON>(response_buffer, 8, "IRQ Status");
+	radio_command((uint8_t *) "\x20\x00\x00\x00", 4, response_buffer, 8); // hex_dump<CON>(response_buffer, 8, "IRQ Status");
 }
 
 extern "C" {
@@ -185,6 +196,7 @@ void SysTick_Handler(void) {
 	if (TIMEOUT::count_down()) exit_idle();
 }
 
+#if (defined STM32F1xx || defined STM32F4xx)
 void EXTI0_IRQHandler(void)
 {
 	EXT_INTERRUPT::handle_irq<0>();
@@ -226,7 +238,25 @@ void EXTI15_10_IRQHandler(void)
 	EXT_INTERRUPT::handle_irq<10, 15>();
 	exit_idle();
 }
+#elif (defined STM32F0xx)
+void EXTI0_1_IRQHandler(void)
+{
+	EXT_INTERRUPT::handle_irq<0, 1>();
+	exit_idle();
+}
 
+void EXTI2_3_IRQHandler(void)
+{
+	EXT_INTERRUPT::handle_irq<2, 3>();
+	exit_idle();
+}
+
+void EXTI4_15_IRQHandler(void)
+{
+	EXT_INTERRUPT::handle_irq<4, 15>();
+	exit_idle();
+}
+#endif
 }
 
 int main(void)
@@ -251,16 +281,17 @@ int main(void)
 	TIMEOUT::set_and_wait(5);
 	EXT_INTERRUPT::init();
 
-	CON::getc();
+	// CON::getc();
 	LED1::set_high();
-	CON::puts("Si4455 example start.\n");
+	// CON::puts("Si4455 example start.\n");
 	radio_init();
+	part_info();
 	while (1) {
-#if 0
+#if (MODE == RX)
 		clear_irq();
 		start_rx();
 		device_status();
-		CON::puts("-- Wait for IRQ ------------------------------------------\n");
+		// CON::puts("-- Wait for IRQ ------------------------------------------\n");
 		IRQ::clear_irq();
 		IRQ::wait_for_irq();
 		clear_irq();
@@ -268,7 +299,7 @@ int main(void)
 		rx_fifo_info();
 		read_rx_fifo(response_buffer[0]);
 		reset_rx_fifo();
-		CON::puts("----------------------------------------------------------\n");
+		// CON::puts("----------------------------------------------------------\n");
 		LED2::set_low();
 #else
 		LED2::set_high();
@@ -278,7 +309,7 @@ int main(void)
 		IRQ::wait_for_irq();
 		clear_irq();
 		LED2::set_low();
-		TIMEOUT::set_and_wait(500);
+		TIMEOUT::set_and_wait(200);
 #endif
 	}
 }
