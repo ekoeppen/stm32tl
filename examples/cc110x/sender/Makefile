@@ -7,4 +7,6 @@ CXX_SRCS = main.cpp
 
 PROJECT_FLAGS = -I..
 
+OPTIMIZE = -O0
+
 include $(STM32TL)/common/common.mk
