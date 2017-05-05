@@ -126,7 +126,7 @@ static constexpr uint8_t cc110x_default_init_values[][2] = {
 	{CC1101_FREQ0,       0x3B},
 	{CC1101_MDMCFG4,     0xFA}, // 135kHz channel bandwidth
 	{CC1101_MDMCFG3,     0x83}, // 38.4kbps symbol rate
-	{CC1101_MDMCFG2,     0x06}, // 2-FSK, 16/16 sync word detection, carrier sense
+	{CC1101_MDMCFG2,     0x31}, // OOK, 16/16 sync word detection
 	{CC1101_MDMCFG1,     0x42}, // 8 bytes preamble
 	{CC1101_DEVIATN,     0x27}, // 11.9kHz FSK deviation
 	{CC1101_MCSM1,       0x3c},
@@ -137,6 +137,9 @@ static constexpr uint8_t cc110x_default_init_values[][2] = {
 	{CC1101_FSCAL2,      0x2A},
 	{CC1101_FSCAL1,      0x00},
 	{CC1101_FSCAL0,      0x1F},
+	{CC1101_AGCCTRL2,    0x04},
+	{CC1101_AGCCTRL1,    0x00},
+	{CC1101_AGCCTRL0,    0x91},
 	{CC1101_TEST2,       0x81},
 	{CC1101_TEST1,       0x35},
 	{CC1101_TEST0,       0x09},
