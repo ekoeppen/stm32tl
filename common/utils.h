@@ -1,5 +1,14 @@
 #pragma once
 
+template <typename T>
+class mem_ptr {
+	uint32_t addr;
+public:
+	constexpr mem_ptr(uint32_t i) : addr{i} {}
+	operator T*() const { return reinterpret_cast<T*>(addr); }
+	T* operator->() const { return operator T*(); }
+};
+
 extern char *itoa_ext(int value, unsigned int radix, unsigned int uppercase, unsigned int value_unsigned, int zero_pad);
 extern void delay(int count);
 
