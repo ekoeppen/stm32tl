@@ -1,5 +1,7 @@
 #pragma once
 
+#include <peripherals.h>
+
 namespace USB_T {
 
 struct EP_DEFAULT_HANDLER {
@@ -42,7 +44,14 @@ struct ENDPOINT {
 		MAX_RX_COUNT > 62 ?
 			(0x8000 | ((MAX_RX_COUNT / 32) << 10)) :
 			(MAX_RX_COUNT / 2) << 10;
-	static constexpr volatile uint32_t *EPxR = ((uint32_t *) &USB->EP0R) + NUMBER;
+	static constexpr volatile uint16_t *EPxR = (
+			NUMBER == 0 ? &USB_DEV.EP0R :
+			NUMBER == 1 ? &USB_DEV.EP1R :
+			NUMBER == 2 ? &USB_DEV.EP2R :
+			NUMBER == 3 ? &USB_DEV.EP3R :
+			NUMBER == 4 ? &USB_DEV.EP4R :
+			NUMBER == 5 ? &USB_DEV.EP5R :
+			NUMBER == 6 ? &USB_DEV.EP6R : &USB_DEV.EP7R);
 	static constexpr USB_BTABLE_TypeDef *BTABLE = &USB_BTABLE_ENTRY[NUMBER];
 
 	static uint16_t init(uint16_t btable_offset) {

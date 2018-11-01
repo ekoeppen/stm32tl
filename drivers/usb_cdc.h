@@ -2,6 +2,7 @@
 
 #include <usb/usb.h>
 #include <string.h>
+#include <peripherals.h>
 
 namespace USB_T {
 
@@ -34,11 +35,6 @@ struct CDC_CORE {
 		0x04, 0x03, 0x09, 0x04
 	};
 
-#ifdef STM32F0xx
-	static constexpr uint8_t *u_id = (uint8_t *) 0x1ffff7ac;
-#else
-	static constexpr uint8_t *u_id = (uint8_t *) 0x1ffff7e8;
-#endif
 	static constexpr uint8_t line_coding[7] = {0x00, 0xc2, 0x01, 0x00, 0x00, 0x00, 0x08};
 
 	static void get_serial_number_string_descriptor(const uint8_t **descriptor, uint16_t *length) {
@@ -47,8 +43,8 @@ struct CDC_CORE {
 		*length = sizeof(data);
 		data[0] = sizeof(data); data[1] = 3;
 		for (int i = 0; i < 96 / 8; i++) {
-			data[i * 4 + 2] = HEX_DIGIT(u_id[i] >> 4);
-			data[i * 4 + 4] = HEX_DIGIT(u_id[i] & 0x0f);
+			data[i * 4 + 2] = HEX_DIGIT(Unique_ID[i] >> 4);
+			data[i * 4 + 4] = HEX_DIGIT(Unique_ID[i] & 0x0f);
 		}
 		*descriptor = data;
 	};

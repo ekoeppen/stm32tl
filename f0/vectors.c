@@ -1,5 +1,7 @@
 #define MINIMUM_RAM 0x20001000
 
+#include <stm32f0xx.h>
+
 void Default_Handler(void)
 {
 	while (1) ;

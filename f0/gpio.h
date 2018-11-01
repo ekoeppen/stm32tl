@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <tasks.h>
 #include <stm32f0xx.h>
+#include <peripherals.h>
 
 extern volatile uint32_t EXTI_IRQ_STATE;
 
@@ -70,8 +71,6 @@ template<const GPIO_PORT_ID PORT,
 	const GPIO_AF AF = AF0,
 	const EDGE EXTI_EDGE = EDGE_RISING>
 struct GPIO_T {
-	static constexpr GPIO_TypeDef *port = ((GPIO_TypeDef *) (GPIOA_BASE + PORT * 0x400));
-
 	static void init(void) {
 		if (MODE != MODE_INPUT) set_mode(MODE);
 		if (TYPE != TYPE_PUSH_PULL) set_type(TYPE);
@@ -79,6 +78,8 @@ struct GPIO_T {
 		if (PULL != PULL_NONE) set_pull(PULL);
 		RCC->AHBENR |= (1 << (PORT + 17));
 	}
+	static constexpr GPIO_TypeDef *port =
+		PORT == PA ? &GPIO_A : (PORT == PB ? &GPIO_B : (PORT == PC ? &GPIO_C : (PORT == PD ? &GPIO_D : &GPIO_F)));
 
 	static constexpr uint16_t bit_value = 1 << PIN;
 	static constexpr uint32_t mode = MODE << (PIN * 2);
@@ -239,8 +240,8 @@ template <const GPIO_PORT_ID PORT,
 	typename PIN14 = PIN_UNUSED,
 	typename PIN15 = PIN_UNUSED>
 struct GPIO_PORT_T {
-	static constexpr GPIO_TypeDef *port = ((GPIO_TypeDef *) (GPIOA_BASE + PORT * 0x400));
-
+	static constexpr GPIO_TypeDef *port =
+		PORT == PA ? &GPIO_A : (PORT == PB ? &GPIO_B : (PORT == PC ? &GPIO_C : (PORT == PD ? &GPIO_D : &GPIO_F)));
 	static void init(void) {
 		RCC->AHBENR |= (1 << (PORT + 17));
 

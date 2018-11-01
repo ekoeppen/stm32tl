@@ -57,7 +57,7 @@ template<const GPIO_PORT_ID PORT,
 	const INTERRUPT_ENABLE INTERRUPT = INTERRUPT_DISABLED,
 	const EDGE EXTI_EDGE = EDGE_RISING>
 struct GPIO_T {
-	static constexpr GPIO_TypeDef *port = ((GPIO_TypeDef *) (GPIOA_BASE + PORT * 0x400));
+	static constexpr GPIO_TypeDef *port = &GPIO_A[PORT];
       	static constexpr uint8_t pin = PIN;
 	static constexpr GPIO_MODE mode = MODE;
 	static constexpr GPIO_CONF conf = CONF;

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stm32f0xx.h>
+#include <peripherals.h>
 #include <utils.h>
 #include <usb/definitions.h>
 #include <usb/endpoint.h>

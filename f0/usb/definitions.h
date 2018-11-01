@@ -49,13 +49,6 @@ enum EP_STATUS {
 	VALID = 3
 };
 
-struct USB_BTABLE_TypeDef {
-	__IO uint16_t USB_ADDR_TX;
-	__IO uint16_t USB_COUNT_TX;
-	__IO uint16_t USB_ADDR_RX;
-	__IO uint16_t USB_COUNT_RX;
-};
-
 struct SETUP_PACKET_HEADER {
 	uint8_t bmRequestType;
 	uint8_t bRequest;
@@ -155,8 +148,5 @@ struct SYNC_FRAME {
 	uint16_t wLength;
 	uint16_t wFrameNumber;
 };
-
-#define USB_BTABLE_ENTRY_BASE (uint32_t *) 0x40006000
-#define USB_BTABLE_ENTRY ((USB_BTABLE_TypeDef *) USB_BTABLE_ENTRY_BASE)
 
 }
