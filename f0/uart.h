@@ -31,7 +31,7 @@ struct USART_T {
 
 	static void init(void) {
 		RCC->APB2ENR |= RCC_APB2ENR_USART1EN;
-		uart->BRR = CLOCK::frequency / BAUD / 4;
+		uart->BRR = CLOCK::frequency / BAUD;
 		uart->CR1 = USART_CR1_TE | USART_CR1_RE | USART_CR1_UE | USART_CR1_RXNEIE;
 		NVIC_EnableIRQ(USART1_IRQn);
 		NVIC_ClearPendingIRQ(USART1_IRQn);

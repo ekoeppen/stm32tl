@@ -37,7 +37,9 @@ void HardFault_Handler(void)
 
 void USART1_IRQHandler(void)
 {
-	SERIAL::handle_irq();
+	if (SERIAL::handle_irq()) {
+		exit_idle();
+	}
 }
 
 }
