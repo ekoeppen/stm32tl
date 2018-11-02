@@ -37,20 +37,14 @@ struct CP2102 {
 		0x04, 0x03, 0x09, 0x04
 	};
 
-#ifdef STM32F0xx
-	static constexpr uint8_t *u_id = (uint8_t *) 0x1ffff7ac;
-#else
-	static constexpr uint8_t *u_id = (uint8_t *) 0x1ffff7e8;
-#endif
-
 	static void get_serial_number_string_descriptor(const uint8_t **descriptor, uint16_t *length) {
 		static uint8_t data[2 + 96 / 8 * 4];
 		memset(data, 0, sizeof(data));
 		*length = sizeof(data);
 		data[0] = sizeof(data); data[1] = 3;
 		for (int i = 0; i < 96 / 8; i++) {
-			data[i * 4 + 2] = HEX_DIGIT(u_id[i] >> 4);
-			data[i * 4 + 4] = HEX_DIGIT(u_id[i] & 0x0f);
+			data[i * 4 + 2] = HEX_DIGIT(Unique_ID[i] >> 4);
+			data[i * 4 + 4] = HEX_DIGIT(Unique_ID[i] & 0x0f);
 		}
 		*descriptor = data;
 	};

@@ -79,7 +79,7 @@ struct GPIO_T {
 		RCC->AHBENR |= (1 << (PORT + 17));
 	}
 	static constexpr GPIO_TypeDef *port =
-		PORT == PA ? &GPIO_A : (PORT == PB ? &GPIO_B : (PORT == PC ? &GPIO_C : (PORT == PD ? &GPIO_D : &GPIO_F)));
+		PORT == PA ? &P_GPIOA : PORT == PB ? &P_GPIOB : PORT == PC ? &P_GPIOC : PORT == PD ? &P_GPIOD : &P_GPIOF;
 
 	static constexpr uint16_t bit_value = 1 << PIN;
 	static constexpr uint32_t mode = MODE << (PIN * 2);
@@ -241,7 +241,7 @@ template <const GPIO_PORT_ID PORT,
 	typename PIN15 = PIN_UNUSED>
 struct GPIO_PORT_T {
 	static constexpr GPIO_TypeDef *port =
-		PORT == PA ? &GPIO_A : (PORT == PB ? &GPIO_B : (PORT == PC ? &GPIO_C : (PORT == PD ? &GPIO_D : &GPIO_F)));
+		PORT == PA ? &P_GPIOA : PORT == PB ? &P_GPIOB : PORT == PC ? &P_GPIOC : PORT == PD ? &P_GPIOD : &P_GPIOF;
 	static void init(void) {
 		RCC->AHBENR |= (1 << (PORT + 17));
 

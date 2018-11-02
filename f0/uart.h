@@ -18,9 +18,9 @@ template<typename CLOCK,
 	const int STOP_BITS = 1>
 struct USART_T {
 #ifdef USART2
-	static constexpr USART_TypeDef *uart = INSTANCE == USART_1 ? USART1 : USART2;
+	static constexpr USART_TypeDef *uart = INSTANCE == USART_1 ? &P_USART1 : &P_USART2;
 #else
-	static constexpr USART_TypeDef *uart = USART1;
+	static constexpr USART_TypeDef *uart = &P_USART1;
 #endif
 
 	volatile static bool irq_triggered;

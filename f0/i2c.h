@@ -8,7 +8,7 @@ template<typename SYSCLK,
 	const uint32_t FREQUENCY = 100000>
 struct MASTER {
 	static uint8_t slave_addr;
-	static constexpr I2C_TypeDef *i2c = (INSTANCE == 1 ? I2C1 : I2C2);
+	static constexpr I2C_TypeDef *i2c = (INSTANCE == 1 ? &P_I2C1 : &P_I2C2);
 
 	static void init(void) {
 		slave_addr = SLAVE_ADDR;
@@ -99,7 +99,7 @@ template<typename SYSCLK,
 	TX_CALLBACK tx_callback>
 struct SLAVE {
 	static bool transmitting;
-	static constexpr I2C_TypeDef *i2c = (INSTANCE == 1 ? I2C1 : I2C2);
+	static constexpr I2C_TypeDef *i2c = (INSTANCE == 1 ? &P_I2C1 : &P_I2C2);
 
 	static void init(void) {
 		i2c->CR1 &= ~I2C_CR1_PE;

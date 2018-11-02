@@ -16,8 +16,8 @@ struct EP_DEFAULT_HANDLER {
 		uint16_t *pma_data, *d;
 		int16_t len;
 		if (out) {
-			pma_data = (uint16_t *) ((USB_BTABLE_ENTRY[ep].USB_ADDR_RX) + 0x40006000);
-			len = USB_BTABLE_ENTRY[ep].USB_COUNT_RX & 0x3ff;
+			pma_data = (uint16_t *) ((P_USB_BTABLE[ep].USB_ADDR_RX) + 0x40006000);
+			len = P_USB_BTABLE[ep].USB_COUNT_RX & 0x3ff;
 			d = (uint16_t *) data;
 			while (len > 0) {
 				*d++ = *pma_data++;
@@ -45,14 +45,14 @@ struct ENDPOINT {
 			(0x8000 | ((MAX_RX_COUNT / 32) << 10)) :
 			(MAX_RX_COUNT / 2) << 10;
 	static constexpr volatile uint16_t *EPxR = (
-			NUMBER == 0 ? &USB_DEV.EP0R :
-			NUMBER == 1 ? &USB_DEV.EP1R :
-			NUMBER == 2 ? &USB_DEV.EP2R :
-			NUMBER == 3 ? &USB_DEV.EP3R :
-			NUMBER == 4 ? &USB_DEV.EP4R :
-			NUMBER == 5 ? &USB_DEV.EP5R :
-			NUMBER == 6 ? &USB_DEV.EP6R : &USB_DEV.EP7R);
-	static constexpr USB_BTABLE_TypeDef *BTABLE = &USB_BTABLE_ENTRY[NUMBER];
+			NUMBER == 0 ? &P_USB.EP0R :
+			NUMBER == 1 ? &P_USB.EP1R :
+			NUMBER == 2 ? &P_USB.EP2R :
+			NUMBER == 3 ? &P_USB.EP3R :
+			NUMBER == 4 ? &P_USB.EP4R :
+			NUMBER == 5 ? &P_USB.EP5R :
+			NUMBER == 6 ? &P_USB.EP6R : &P_USB.EP7R);
+	static constexpr USB_BTABLE_TypeDef *BTABLE = &P_USB_BTABLE[NUMBER];
 
 	static uint16_t init(uint16_t btable_offset) {
 		*EPxR = (INIT_RX_STATUS << 12) | (TYPE << 9) | (INIT_TX_STATUS << 4) | ADDRESS;
@@ -194,7 +194,7 @@ struct EP0_HANDLER_T {
 
 		EP::set_tx_count(length);
 		pending_length -= length;
-		data = (uint16_t *) ((USB_BTABLE_ENTRY[0].USB_ADDR_TX) + 0x40006000);
+		data = (uint16_t *) ((P_USB_BTABLE[0].USB_ADDR_TX) + 0x40006000);
 		length = (length + 1) >> 1;
 		while (length > 0) {
 			temp = *pending_data + (*(pending_data + 1) << 8);
@@ -218,13 +218,13 @@ struct EP0_HANDLER_T {
 	}
 
 	static void set_address(void) {
-		SET_ADDRESS_PACKET *packet = (SET_ADDRESS_PACKET *) ((USB_BTABLE_ENTRY[0].USB_ADDR_RX) + 0x40006000);
+		SET_ADDRESS_PACKET *packet = (SET_ADDRESS_PACKET *) ((P_USB_BTABLE[0].USB_ADDR_RX) + 0x40006000);
 		setup_set_address = packet->wAddress;
 		send_zero_length_data();
 	}
 
 	static void get_descriptor(void) {
-		GET_DESCRIPTOR_PACKET *packet = (GET_DESCRIPTOR_PACKET *) ((USB_BTABLE_ENTRY[0].USB_ADDR_RX) + 0x40006000);
+		GET_DESCRIPTOR_PACKET *packet = (GET_DESCRIPTOR_PACKET *) ((P_USB_BTABLE[0].USB_ADDR_RX) + 0x40006000);
 		setup_request_length = packet->wLength;
 		send_descriptor(packet->bDescriptorType, packet->bDescriptorIndex, packet->wLength);
 	}
@@ -233,7 +233,7 @@ struct EP0_HANDLER_T {
 		EP::clear_ctr_rx();
 		EP::set_tx_rx_status(NAK, NAK);
 
-		SETUP_PACKET *packet = (SETUP_PACKET *) ((USB_BTABLE_ENTRY[0].USB_ADDR_RX) + 0x40006000);
+		SETUP_PACKET *packet = (SETUP_PACKET *) ((P_USB_BTABLE[0].USB_ADDR_RX) + 0x40006000);
 		switch (packet->bRequest) {
 		case SET_ADDRESS: set_address(); break;
 		case GET_DESCRIPTOR: get_descriptor(); break;
