@@ -2,6 +2,7 @@
 
 #include <usb/usb.h>
 #include <string.h>
+#include <utils.h>
 
 namespace USB_T {
 
@@ -35,9 +36,9 @@ struct CDC_CORE {
 	};
 
 #ifdef STM32F0xx
-	static constexpr uint8_t *u_id = (uint8_t *) 0x1ffff7ac;
+	static constexpr auto u_id = mem_ptr<uint8_t>(0x1ffff7ac);
 #else
-	static constexpr uint8_t *u_id = (uint8_t *) 0x1ffff7e8;
+	static constexpr auto u_id = mem_ptr<uint8_t>(0x1ffff7e8);
 #endif
 	static constexpr uint8_t line_coding[7] = {0x00, 0xc2, 0x01, 0x00, 0x00, 0x00, 0x08};
 

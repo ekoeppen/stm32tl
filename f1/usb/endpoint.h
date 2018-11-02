@@ -42,8 +42,8 @@ struct ENDPOINT {
 		MAX_RX_COUNT > 62 ?
 			(0x8000 | ((MAX_RX_COUNT / 32) << 10)) :
 			(MAX_RX_COUNT / 2) << 10;
-	static constexpr volatile uint32_t *EPxR = ((uint32_t *) &USB->EP0R) + NUMBER;
-	static constexpr USB_BTABLE_TypeDef *BTABLE = ((USB_BTABLE_TypeDef *) &USB_BTABLE) + NUMBER;
+	static constexpr auto EPxR = mem_ptr<volatile uint16_t>(USB_BASE + NUMBER * 4);
+	static constexpr auto BTABLE = mem_ptr<USB_BTABLE_TypeDef>(USB_BTABLE_BASE + NUMBER * sizeof(USB_BTABLE_TypeDef));
 
 	static uint16_t init(uint16_t btable_offset) {
 		*EPxR = (INIT_RX_STATUS << 12) | (TYPE << 9) | (INIT_TX_STATUS << 4) | ADDRESS;
@@ -131,6 +131,11 @@ struct ENDPOINT {
 		return count;
 	}
 };
+
+template<const uint8_t NUMBER, const EP_TYPE TYPE, const uint8_t ADDRESS, const uint16_t MAX_TX_COUNT, const uint16_t MAX_RX_COUNT, const EP_STATUS INIT_TX_STATUS, const EP_STATUS INIT_RX_STATUS>
+const mem_ptr<volatile uint16_t> ENDPOINT<NUMBER, TYPE, ADDRESS, MAX_TX_COUNT, MAX_RX_COUNT, INIT_TX_STATUS, INIT_RX_STATUS>::EPxR;
+template<const uint8_t NUMBER, const EP_TYPE TYPE, const uint8_t ADDRESS, const uint16_t MAX_TX_COUNT, const uint16_t MAX_RX_COUNT, const EP_STATUS INIT_TX_STATUS, const EP_STATUS INIT_RX_STATUS>
+const mem_ptr<USB_BTABLE_TypeDef> ENDPOINT<NUMBER, TYPE, ADDRESS, MAX_TX_COUNT, MAX_RX_COUNT, INIT_TX_STATUS, INIT_RX_STATUS>::BTABLE;
 
 typedef bool(*DESCRIPTOR_CALLBACK)(uint8_t type, uint8_t index, const uint8_t **descriptor, uint16_t *length);
 typedef bool(*SETUP_CALLBACK)(SETUP_PACKET *packet, const uint8_t **response_data, uint16_t *length);

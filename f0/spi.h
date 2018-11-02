@@ -1,5 +1,7 @@
 #pragma once
 
+#include <utils.h>
+
 template<typename CLOCK,
 	const bool MASTER = true,
 	const int MODE = 3,
@@ -7,7 +9,7 @@ template<typename CLOCK,
 	const int DATA_LENGTH = 8,
 	const bool LSB = false>
 struct SPI_T {
-	static constexpr SPI_TypeDef *spi = SPI1;
+	static constexpr auto spi = mem_ptr<SPI_TypeDef>(SPI1_BASE);
 	static constexpr uint32_t data_length = DATA_LENGTH;
 
 	static constexpr int baudrate(const int rate, const int base_clock) {

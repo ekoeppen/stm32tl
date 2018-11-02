@@ -2,6 +2,7 @@
 
 #include <stm32f1xx.h>
 #include <tasks.h>
+#include <utils.h>
 
 extern volatile uint32_t EXTI_IRQ_STATE;
 
@@ -50,15 +51,15 @@ enum INTERRUPT_ENABLE {
 };
 
 template<const GPIO_PORT_ID PORT,
-      	const uint8_t PIN,
+	const uint8_t PIN,
 	const GPIO_MODE MODE = INPUT,
 	const GPIO_CONF CONF = FLOATING,
 	const LEVEL INITIAL_LEVEL = LOW,
 	const INTERRUPT_ENABLE INTERRUPT = INTERRUPT_DISABLED,
 	const EDGE EXTI_EDGE = EDGE_RISING>
 struct GPIO_T {
-	static constexpr GPIO_TypeDef *port = ((GPIO_TypeDef *) (GPIOA_BASE + PORT * 0x400));
-      	static constexpr uint8_t pin = PIN;
+	static constexpr auto port = mem_ptr<GPIO_TypeDef>(GPIOA_BASE + PORT * 0x400);
+	static constexpr uint8_t pin = PIN;
 	static constexpr GPIO_MODE mode = MODE;
 	static constexpr GPIO_CONF conf = CONF;
 	static constexpr uint8_t mode_conf = (CONF << 2 | MODE);
@@ -178,7 +179,7 @@ struct GPIO_INPUT_T: public GPIO_T<PORT, PIN> {
 };
 
 struct PIN_UNUSED {
-      	static constexpr uint8_t pin = 0;
+	static constexpr uint8_t pin = 0;
 	static constexpr GPIO_MODE mode = INPUT;
 	static constexpr GPIO_CONF conf = FLOATING;
 	static constexpr uint32_t mode_conf_low = 0;
@@ -223,7 +224,7 @@ template <const GPIO_PORT_ID PORT,
 	typename PIN14 = PIN_UNUSED,
 	typename PIN15 = PIN_UNUSED>
 struct GPIO_PORT_T {
-	static constexpr GPIO_TypeDef *port = ((GPIO_TypeDef *) (GPIOA_BASE + PORT * 0x400));
+	static constexpr auto port = mem_ptr<GPIO_TypeDef>(GPIOA_BASE + PORT * 0x400);
 	static constexpr uint32_t crl = (0x44444444 &
 		PIN0::mode_conf_low_mask & PIN1::mode_conf_low_mask & PIN2::mode_conf_low_mask & PIN3::mode_conf_low_mask &
 		PIN4::mode_conf_low_mask & PIN5::mode_conf_low_mask & PIN6::mode_conf_low_mask & PIN7::mode_conf_low_mask &

@@ -2,6 +2,7 @@
 
 #include <stdlib.h>
 #include <tasks.h>
+#include <utils.h>
 #include <stm32f0xx.h>
 
 extern volatile uint32_t EXTI_IRQ_STATE;
@@ -62,7 +63,7 @@ enum EDGE {
 };
 
 template<const GPIO_PORT_ID PORT,
-      	const int PIN,
+	const int PIN,
 	const GPIO_MODE MODE = MODE_INPUT,
 	const GPIO_TYPE TYPE = TYPE_PUSH_PULL,
 	const GPIO_SPEED SPEED = SPEED_LOW,
@@ -70,7 +71,7 @@ template<const GPIO_PORT_ID PORT,
 	const GPIO_AF AF = AF0,
 	const EDGE EXTI_EDGE = EDGE_RISING>
 struct GPIO_T {
-	static constexpr GPIO_TypeDef *port = ((GPIO_TypeDef *) (GPIOA_BASE + PORT * 0x400));
+	static constexpr auto port = mem_ptr<GPIO_TypeDef>(GPIOA_BASE + PORT * 0x400);
 
 	static void init(void) {
 		if (MODE != MODE_INPUT) set_mode(MODE);
@@ -239,7 +240,7 @@ template <const GPIO_PORT_ID PORT,
 	typename PIN14 = PIN_UNUSED,
 	typename PIN15 = PIN_UNUSED>
 struct GPIO_PORT_T {
-	static constexpr GPIO_TypeDef *port = ((GPIO_TypeDef *) (GPIOA_BASE + PORT * 0x400));
+	static constexpr auto port = mem_ptr<GPIO_TypeDef>(GPIOA_BASE + PORT * 0x400);
 
 	static void init(void) {
 		RCC->AHBENR |= (1 << (PORT + 17));

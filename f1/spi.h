@@ -44,9 +44,9 @@ template<typename CLOCK,
 	const bool MSB = true,
 	const bool POLLED = true>
 struct SPI_T {
-	static constexpr SPI_TypeDef *spi = (INSTANCE == SPI_1 ? SPI1 : (INSTANCE == SPI_2 ? SPI2 :
+	static constexpr auto spi = mem_ptr<SPI_TypeDef>(INSTANCE == SPI_1 ? SPI1_BASE : (INSTANCE == SPI_2 ? SPI2_BASE :
 #ifdef RCC_APB1ENR_SPI3EN
-				SPI3
+				SPI3_BASE
 #else
 				0
 #endif

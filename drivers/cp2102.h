@@ -2,6 +2,7 @@
 
 #include <io.h>
 #include <string.h>
+#include <utils.h>
 
 namespace USB_T {
 
@@ -38,9 +39,9 @@ struct CP2102 {
 	};
 
 #ifdef STM32F0xx
-	static constexpr uint8_t *u_id = (uint8_t *) 0x1ffff7ac;
+	static constexpr auto u_id = mem_ptr<uint8_t>(0x1ffff7ac);
 #else
-	static constexpr uint8_t *u_id = (uint8_t *) 0x1ffff7e8;
+	static constexpr auto u_id = mem_ptr<uint8_t>(0x1ffff7e8);
 #endif
 
 	static void get_serial_number_string_descriptor(const uint8_t **descriptor, uint16_t *length) {

@@ -197,7 +197,7 @@ struct SYNC_FRAME {
 	uint16_t wFrameNumber;
 };
 
-#define USB_BTABLE_BASE (uint32_t *) 0x40006000
+#define USB_BTABLE_BASE 0x40006000
 USB_BTABLE_TypeDef USB_BTABLE[8] __attribute__((section(".usb_pma_peripheral")));
 // USB_BTABLE_TypeDef * const USB_BTABLE = (USB_BTABLE_TypeDef *) &USB_BTABLE_P[0];
 
