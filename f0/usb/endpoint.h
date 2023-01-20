@@ -82,11 +82,11 @@ struct ENDPOINT {
 	}
 
 	static void set_tx_status(const EP_STATUS status) {
-		*EPxR = ((*EPxR & 0xbfbf) | 0x8080) ^ (status << 4);
+		*EPxR = ((*EPxR & 0x0fbf) | 0x8080) ^ (status << 4);
 	}
 
 	static void set_rx_status(const EP_STATUS status) {
-		*EPxR = ((*EPxR & 0xbfbf) | 0x8080) ^ (status << 12);
+		*EPxR = ((*EPxR & 0xbf0f) | 0x8080) ^ (status << 12);
 	}
 
 	static void set_tx_rx_status(const EP_STATUS tx_status, const EP_STATUS rx_status) {
